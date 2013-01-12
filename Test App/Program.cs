@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Threading;
 using Gadgeteer;
-using Gadgeteer.Modules.GHIElectronics.IO60P16;
+using Gadgeteer.Modules.IanLee.IO60P16;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 //using NETMFx.LedCube.Effects;
 //using NETMFx.LedCube.IO60P16;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
-using OutputPort = Gadgeteer.Modules.GHIElectronics.IO60P16.OutputPort;
-using InputPort = Gadgeteer.Modules.GHIElectronics.IO60P16.InputPort;
-using InterruptPort = Gadgeteer.Modules.GHIElectronics.IO60P16.InterruptPort;
-using PWM = Gadgeteer.Modules.GHIElectronics.IO60P16.PWM;
+using OutputPort = Gadgeteer.Modules.IanLee.IO60P16.OutputPort;
+using InputPort = Gadgeteer.Modules.IanLee.IO60P16.InputPort;
+using InterruptPort = Gadgeteer.Modules.IanLee.IO60P16.InterruptPort;
+using PWM = Gadgeteer.Modules.IanLee.IO60P16.PWM;
 
 namespace Test_App
 {
     public partial class Program
     {
-        private static GTM.GHIElectronics.IO60P16.IO60P16Module io60p16;
+        private static GTM.IanLee.IO60P16.IO60P16Module io60p16;
 
         private static byte period = 0xfe;
         private static byte pulseWidth = 0x18;
@@ -52,18 +52,21 @@ namespace Test_App
 
         void BareMetalTest()
         {
+            const int PORT = 6;
+            const int PIN = 0x11;   // pin #1
+
             // 1.  Read current status of interrupt enable register.
             io60p16.WriteRegister(0x18, 7);                 // Select port
             byte intStatus = io60p16.ReadRegister(0x19);
             Debug.Print("InterruptEnable:  " + intStatus);
-            // 2.  Enable interrupt on port #7 pin #14.
-            io60p16.WriteRegister(0x18, 7);                 // Select port
-            io60p16.WriteRegister(0x19, 191);               // Set interrupt enable bit.
+            // 2.  Enable interrupt.
+            io60p16.WriteRegister(0x18, PORT);                 // Select port
+            io60p16.WriteRegister(0x19, PIN);               // Set interrupt enable bit.
             // 3.  Keep reading values...
             while(true)
             {
-                io60p16.WriteRegister(0x18, 7);                 // Select port
-                intStatus = io60p16.ReadRegister(0x19);
+                io60p16.WriteRegister(0x18, PORT);                 // Select port
+                intStatus = io60p16.ReadRegister(PIN);
                 Debug.Print("InterruptEnable:  " + intStatus);
                 Thread.Sleep(500);
             };
@@ -72,27 +75,28 @@ namespace Test_App
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
-            io60p16 = new GTM.GHIElectronics.IO60P16.IO60P16Module(7);
+            io60p16 = new GTM.IanLee.IO60P16.IO60P16Module(1);
 
             Debug.Print("Program Started");
 
-            // Bare metal test.
-            var t2 = new Thread(BareMetalTest);
-            t2.Start();
-            return;
-
-/*
             byte intStatus;
-            ip0 = io60p16.CreateInterruptPort(IOPin.Port7_Pwm14);
+            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1);
+            ip0.OnInterrupt += (data1, data2, time) => Debug.Print("Bam!");
             var t2 = new GT.Timer(1000);
             t2.Tick += timer =>
                            {
-                               io60p16.WriteRegister(0x18, 7); // Select port
+                               io60p16.WriteRegister(0x18, 6); // Select port
                                intStatus = io60p16.ReadRegister(0x19);
                                Debug.Print("InterruptEnable:  " + intStatus);
                            };
             t2.Start();
             return;
+/*
+            // Bare metal test.
+            var t2 = new Thread(BareMetalTest);
+            t2.Start();
+            return;
+
 
             Debug.Print("InterruptEnable:  " + io60p16.GetInterruptsEnabled(7));
             op12 = io60p16.CreateOutputPort(IOPin.Port6_Pwm6, false);
@@ -222,7 +226,7 @@ namespace Test_App
 
             // Test PWM.
             //var pwm2 = new Microsoft.SPOT.Hardware.PWM(Cpu.PWMChannel.PWM_7, 8000, 4000, Microsoft.SPOT.Hardware.PWM.ScaleFactor.Nanoseconds, false);
-            pwm = io60p16.CreatePwm(PwmPin.Pwm14, 5000, 4000, Gadgeteer.Modules.GHIElectronics.IO60P16.PWM.ScaleFactor.Nanoseconds, false);
+            pwm = io60p16.CreatePwm(PwmPin.Pwm14, 5000, 4000, Gadgeteer.Modules.IanLee.IO60P16.PWM.ScaleFactor.Nanoseconds, false);
             pwm.Start();
             return;
 

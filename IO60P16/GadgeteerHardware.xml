@@ -5,17 +5,17 @@
     <!-- The Unique ID is auto-generated and does not usually need to be modified. -->
     <ModuleDefinition Name="IO60P16"
                   UniqueId="dd81ffcf-3637-465c-9337-975c15b0a52e"
-                  Manufacturer="GHI Electronics"
+                  Manufacturer="Module=GHI Electronics, Driver=Ian Lee"
                   Description="A IO60P16 module"
-                  InstanceName="IO60P16"
-                  Type="Gadgeteer.Modules.GHIElectronics.IO60P16.IO60P16Module"
+                  InstanceName="io60P16"
+                  Type="Gadgeteer.Modules.IanLee.IO60P16.IO60P16Module"
                   ModuleSuppliesPower="false"
                   HardwareVersion="1.0"
                   Image="Resources\Image.jpg"
                   BoardHeight="48"
                   BoardWidth="63"
                   MinimumGadgeteerCoreVersion="2.41.100"
-                  HelpUrl="tinyclr.com"
+                  HelpUrl="ianlee.info"
       			>
       
       <!-- This lists the assembly which provides the API to this module, i.e. the output assembly of this template. -->

@@ -3,7 +3,7 @@ using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using Math = System.Math;
 
-namespace Gadgeteer.Modules.GHIElectronics.IO60P16
+namespace Gadgeteer.Modules.IanLee.IO60P16
 {
     public class PWM : IDisposable
     {

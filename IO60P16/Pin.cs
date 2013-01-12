@@ -1,7 +1,7 @@
 using System;
 using Microsoft.SPOT;
 
-namespace Gadgeteer.Modules.GHIElectronics.IO60P16
+namespace Gadgeteer.Modules.IanLee.IO60P16
 {
     public static class Pin
     {

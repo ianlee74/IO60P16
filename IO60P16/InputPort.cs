@@ -1,4 +1,4 @@
-namespace Gadgeteer.Modules.GHIElectronics.IO60P16
+namespace Gadgeteer.Modules.IanLee.IO60P16
 {
     /// <summary>
     /// Represents an instance of an input port that can be used to read the value of a GPIO pin.

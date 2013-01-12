@@ -20,7 +20,7 @@ namespace Test_App
         public static void Main()
         {
             //Important to initialize the Mainboard first
-            Mainboard = new GHIElectronics.Gadgeteer.FEZHydra();			
+            Mainboard = new GHIElectronics.Gadgeteer.FEZCerberus();			
 
             Program program = new Program();
             program.InitializeModules();

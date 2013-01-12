@@ -1,4 +1,4 @@
-namespace Gadgeteer.Modules.GHIElectronics.IO60P16
+namespace Gadgeteer.Modules.IanLee.IO60P16
 {
     public class OutputPort : Port
     {

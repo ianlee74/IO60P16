@@ -10,7 +10,7 @@ using GTI = Gadgeteer.Interfaces;
 using GHI.OSHW.Hardware;
 #endif
 
-namespace Gadgeteer.Modules.GHIElectronics.IO60P16
+namespace Gadgeteer.Modules.IanLee.IO60P16
 {
     /// <summary>
     /// A IO60P16 module for Microsoft .NET Gadgeteer
@@ -77,7 +77,7 @@ namespace Gadgeteer.Modules.GHIElectronics.IO60P16
 
             // Start receiving interrupts.
             _interrupt = new InterruptInput(socket, Socket.Pin.Three, GlitchFilterMode.Off, Interfaces.ResistorMode.Disabled, InterruptMode.RisingEdge, null);
-            //_interrupt.Interrupt += OnInterrupt;
+            _interrupt.Interrupt += OnInterrupt;
 
             //try polling...
             //var intPoller = new Thread(CheckForInterrupt);
