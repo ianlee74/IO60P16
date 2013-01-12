@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <!--VS2010 product version-->
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BD13677A-70A9-4FAC-A4E1-11C72471B7BB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gadgeteer.Modules.GHIElectronics.IO60P16</RootNamespace>
+    <AssemblyName>GTM.GHIElectronics.IO60P16</AssemblyName>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <!--Identify this as a MicroFramework, CSharp project-->
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <!--This entry seems to be specific to NET MF projects-->
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+    <!-- Default transport and device-->
+    <DeployDevice>Gadgeteer</DeployDevice>
+    <DeployTransport>USB</DeployTransport>
+    <TargetFrameworkProfile />
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\NETMF\</OutputPath>
+    <DefineConstants>DEBUG;TRACE,MF_FRAMEWORK_VERSION_V4_2,HARDWARE_I2C</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\NETMF\GTM.GHIElectronics.IO60P16.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\NETMF\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\NETMF\GTM.GHIElectronics.IO60P16.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="InputPort.cs" />
+    <Compile Include="InterruptPort.cs" />
+    <Compile Include="IO60P16Module.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutputPort.cs" />
+    <Compile Include="Pin.cs" />
+    <Compile Include="Port.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PWM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Gadgeteer, Version=2.42.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Gadgeteer.DaisyLink, Version=2.42.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="GHI.OSHW.Hardware, Version=4.2.3.1, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SPOT.Hardware" />
+    <Reference Include="Microsoft.SPOT.IO" />
+    <Reference Include="Microsoft.SPOT.Native" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GadgeteerHardware.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceFiles Include="Resources\Image.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Setup\msm.wxs" />
+    <None Include="Setup\en-us.wxl" />
+    <None Include="Setup\common.wxi" />
+    <None Include="Setup\msi.wxs" />
+    <None Include="Setup\G.ico" />
+  </ItemGroup>
+  <!--Stuff for wix-->
+  <PropertyGroup>
+    <WixTasksPath Condition=" '$(WixTasksPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\WixTasks.dll</WixTasksPath>
+    <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\WixTasks.dll</WixTasksPath>
+    <WixToolPath Condition=" '$(WixToolPath)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Installer XML\3.5@InstallRoot)</WixToolPath>
+    <WixToolPath Condition=" '$(WixToolPath)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows Installer XML\3.5@InstallRoot)</WixToolPath>
+    <WixExtDir Condition=" '$(WixExtDir)' == ''">$(WixToolPath)</WixExtDir>
+    <WixIntermediateFolderPath>$(IntermediateOutputPath)\..\Installer</WixIntermediateFolderPath>
+    <WixOutputFolderPath>$(OutDir)\..\Installer</WixOutputFolderPath>
+    <IsInstallerBuildEnabled Condition="! $(DefineConstants.Contains('DEBUG'))">true</IsInstallerBuildEnabled>
+  </PropertyGroup>
+  <UsingTask TaskName="Candle" AssemblyFile="$(WixTasksPath)" />
+  <UsingTask TaskName="Light" AssemblyFile="$(WixTasksPath)" />
+  <!--Build for installer -->
+  <Target Name="AfterBuild" Condition="'$(IsInstallerBuildEnabled)' == 'true'">
+    <Message Text="Compiling msm" />
+    <Candle ToolPath="$(WixToolPath)" DefineConstants="BinPath=$(OutDir);SourcePath=$(ProjectDir)" SourceFiles="setup\msm.wxs" OutputFile="$(WixIntermediateFolderPath)\msm.wixobj" />
+    <Message Text="Linking msm" />
+    <Light ToolPath="$(WixToolPath)" LocalizationFiles="setup\en-us.wxl" ObjectFiles="$(WixIntermediateFolderPath)\msm.wixobj" OutputFile="$(WixOutputFolderPath)\IO60P16.msm" />
+    <Message Text="Compiling msi" />
+    <Candle ToolPath="$(WixToolPath)" DefineConstants="BinPath=$(OutDir);SourcePath=$(ProjectDir)" SourceFiles="setup\msi.wxs" OutputFile="$(WixIntermediateFolderPath)\msi.wixobj" />
+    <Message Text="Linking msi" />
+    <Light ToolPath="$(WixToolPath)" LocalizationFiles="setup\en-us.wxl" ObjectFiles="$(WixIntermediateFolderPath)\msi.wixobj" OutputFile="$(WixOutputFolderPath)\IO60P16.msi" />
+  </Target>
+  <!--Cleanup for installer -->
+  <Target Name="AfterClean">
+    <Message Text="Cleaning up installer" />
+    <ItemGroup>
+      <InstallerFiles Include="$(WixIntermediateFolderPath)\*" />
+      <InstallerFiles Include="$(WixOutputFolderPath)\*" />
+    </ItemGroup>
+    <Delete Files="@(InstallerFiles)" />
+  </Target>
+</Project>

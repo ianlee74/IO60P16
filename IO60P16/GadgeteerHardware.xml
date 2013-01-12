@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<GadgeteerDefinitions xmlns="http://schemas.microsoft.com/Gadgeteer/2011/Hardware">
+  <ModuleDefinitions>
+    <!-- This module definition should be filled in.  Mouse over any attribute name to get more help about that attribute. -->
+    <!-- The Unique ID is auto-generated and does not usually need to be modified. -->
+    <ModuleDefinition Name="IO60P16"
+                  UniqueId="dd81ffcf-3637-465c-9337-975c15b0a52e"
+                  Manufacturer="GHI Electronics"
+                  Description="A IO60P16 module"
+                  InstanceName="IO60P16"
+                  Type="Gadgeteer.Modules.GHIElectronics.IO60P16.IO60P16Module"
+                  ModuleSuppliesPower="false"
+                  HardwareVersion="1.0"
+                  Image="Resources\Image.jpg"
+                  BoardHeight="48"
+                  BoardWidth="63"
+                  MinimumGadgeteerCoreVersion="2.41.100"
+                  HelpUrl="tinyclr.com"
+      			>
+      
+      <!-- This lists the assembly which provides the API to this module, i.e. the output assembly of this template. -->
+      <Assemblies>
+        <Assembly MFVersion="4.1" Name="GTM.GHIElectronics.IO60P16"/>
+      </Assemblies>
+
+      <Sockets>
+        <Socket Left="10.5" Top="13.5" Orientation="0" ConstructorOrder="1" TypesLabel="XY">
+          <Types>
+            <Type>X</Type>
+            <Type>Y</Type>
+          </Types>
+          <Pins>
+            <Pin Shared="false">3</Pin>
+            <Pin Shared="false">4</Pin>
+            <Pin Shared="false">5</Pin>
+          </Pins>
+        </Socket>        
+      </Sockets> 
+      
+    </ModuleDefinition>
+  </ModuleDefinitions>
+</GadgeteerDefinitions>

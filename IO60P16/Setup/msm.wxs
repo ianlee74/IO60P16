@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  
+  <?include common.wxi?>
+  
+  <Module Id="id_module_msm" Language="0" Version="$(var.ModuleSoftwareVersion)">
+
+    <Package Id="$(var.guid_msm_package_id)" 
+             InstallerVersion="100" 
+             Languages="1033" 
+             Manufacturer="$(var.FullManufacturer)" 
+             SummaryCodepage="1252" 
+             AdminImage="no" />
+
+    <Property Id="ALLUSERS" Value="2"/>
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      
+      <!--Files-->
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='id_dir_mfgr' Name='$(var.FullManufacturer)'>
+          <Directory Id='id_dir_gdgtr' Name='!(loc.GadgeteerDirectoryName)'>
+            <Directory Id='id_dir_modules' Name='!(loc.ModulesDirectoryName)'>
+              <Directory Id='INSTALLDIR' Name='$(var.SafeModuleName)'>
+
+                <Component Id='id_comp_gadgeteerhardware' Guid='$(var.guid_msm_comp_gadgeteerhardware_id)'>
+                  <File Id="id_file_gadgeteerhardware" Source="$(var.SourcePath)\GadgeteerHardware.xml" KeyPath="yes"/>
+                </Component>
+
+                <Directory Id="id_dir_netmf_41" Name="NETMF 4.1">
+                  <Component Id="id_comp_files" Guid="$(var.guid_msm_comp_files_id)">
+                    <File Id="id_file_binary" Source="$(var.BinPath)\$(var.OutputFileName).dll" KeyPath="yes"/>
+                    <File Id="id_file_pdb" Source="$(var.BinPath)\$(var.OutputFileName).pdb" />
+                    <File Id="id_file_xml" Source="$(var.BinPath)\$(var.OutputFileName).XML" />
+                  </Component>
+
+                  <Directory Id="id_dir_be" Name="be">
+                    <Component Id="id_comp_files_be" Guid="$(var.guid_msm_comp_files_be_id)">
+                      <File Id="id_file_be_binary" Source="$(var.BinPath)\be\$(var.OutputFileName).dll" KeyPath="yes"/>
+                      <File Id="id_file_be_pdb" Source="$(var.BinPath)\be\$(var.OutputFileName).pdb" />
+                      <File Id="id_file_be_pdbx" Source="$(var.BinPath)\be\$(var.OutputFileName).pdbx" />
+                      <File Id="id_file_be_pe" Source="$(var.BinPath)\be\$(var.OutputFileName).pe" />
+                    </Component>
+                  </Directory>
+
+                  <Directory Id="id_dir_le" Name="le">
+                    <Component Id="id_comp_files_le" Guid="$(var.guid_msm_comp_files_le_id)">
+                      <File Id="id_file_le_binary" Source="$(var.BinPath)\le\$(var.OutputFileName).dll" KeyPath="yes"/>
+                      <File Id="id_file_le_pdb" Source="$(var.BinPath)\le\$(var.OutputFileName).pdb" />
+                      <File Id="id_file_le_pdbx" Source="$(var.BinPath)\le\$(var.OutputFileName).pdbx" />
+                      <File Id="id_file_le_pe" Source="$(var.BinPath)\le\$(var.OutputFileName).pe" />
+                    </Component>
+                  </Directory>
+                </Directory>
+
+                <Directory Id="id_dir_resources" Name="resources">
+                  <Component Id="id_comp_resources" Guid="$(var.guid_msm_comp_resources_id)">
+                    <File Id="id_file_res_image.jpg" Source="$(var.SourcePath)\Resources\Image.jpg" KeyPath="yes"/>
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+
+
+      <!--Registry stuff-->
+      <!--NOTE: This is marked as win32 so that it puts it in the correct location in the registry on x64 machines with registry redirection-->
+      <Component Id="id_comp_reg_key_netmf" Guid="$(var.guid_msm_comp_registry_id)" Win64="no">
+        <RegistryValue Id="NetMicroFxAssemblyGAC41" Root="HKLM" Type="string" Key="$(var.RegistryKeyNetMF41)" Value="[INSTALLDIR]NETMF 4.1"/>
+
+        <!--For VS addins - the value should be the folder containing the gadgeteerhardware.xml -->
+        <RegistryValue Id="VSAddinRegKey" Root="HKLM" Type="string" Key="$(var.RegistryKeyVSAddin)" Value="[INSTALLDIR]" />
+      </Component>
+      
+      
+    </Directory>
+
+  </Module>
+</Wix>
