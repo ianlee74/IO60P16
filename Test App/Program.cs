@@ -75,7 +75,7 @@ namespace Test_App
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
-            io60p16 = new GTM.IanLee.IO60P16.IO60P16Module(1);
+            io60p16 = new GTM.IanLee.IO60P16.IO60P16Module(7);
 
             Debug.Print("Program Started");
 
