@@ -102,11 +102,6 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             // Make sure we actually have some subscribers.
             if (Interrupt == null) return;
 
-            // Because we will receive two interrupts for every state change for each edge,
-            // adding a brief pause to ensure we only capture the rising edge interrupt
-            // as a temporary measure until an InterruptMode property can be added.
-            Thread.Sleep(10);       
-
             // Loop through the enabled ports and find which pin(s) threw the event.
             var status = ReadAllInterruptStatusRegisters();
             for (byte port = 0; port < 8; port++)
