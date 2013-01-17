@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Gadgeteer;
+using Gadgeteer.Interfaces;
 using Gadgeteer.Modules.IanLee.IO60P16;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
@@ -12,6 +13,7 @@ using OutputPort = Gadgeteer.Modules.IanLee.IO60P16.OutputPort;
 using InputPort = Gadgeteer.Modules.IanLee.IO60P16.InputPort;
 using InterruptPort = Gadgeteer.Modules.IanLee.IO60P16.InterruptPort;
 using PWM = Gadgeteer.Modules.IanLee.IO60P16.PWM;
+using ResistorMode = Gadgeteer.Modules.IanLee.IO60P16.ResistorMode;
 
 namespace Test_App
 {
@@ -34,11 +36,11 @@ namespace Test_App
         {
             _parentModule.WriteRegister(0x18, port);                      // Select port
 
-            var b = _parentModule.ReadRegister(0x1a);
+            var b = _parentModule.ReadRegister(0x1a)[0];
             b |= (byte)((1 << pin));
             _parentModule.WriteRegister(0x1a, b);                         // select PWM for port output
 
-            b = _parentModule.ReadRegister(0x1C);
+            b = _parentModule.ReadRegister(0x1C)[0];
             b &= (byte)(~(1 << pin));
             _parentModule.WriteRegister(0x1C, b);                         // Set pin for output.
 
@@ -57,7 +59,7 @@ namespace Test_App
 
             // 1.  Read current status of interrupt enable register.
             io60p16.WriteRegister(0x18, 7);                 // Select port
-            byte intStatus = io60p16.ReadRegister(0x19);
+            byte intStatus = io60p16.ReadRegister(0x19)[0];
             Debug.Print("InterruptEnable:  " + intStatus);
             // 2.  Enable interrupt.
             io60p16.WriteRegister(0x18, PORT);                 // Select port
@@ -66,7 +68,7 @@ namespace Test_App
             while(true)
             {
                 io60p16.WriteRegister(0x18, PORT);                 // Select port
-                intStatus = io60p16.ReadRegister(PIN);
+                intStatus = io60p16.ReadRegister(PIN)[0];
                 Debug.Print("InterruptEnable:  " + intStatus);
                 Thread.Sleep(500);
             };
@@ -80,13 +82,16 @@ namespace Test_App
             Debug.Print("Program Started");
 
             byte intStatus;
-            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1);
-            ip0.OnInterrupt += (data1, data2, time) => Debug.Print("Bam!");
+            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1, ResistorMode.ResistivePullUp, InterruptMode.FallingEdge);
+            ip0.OnInterrupt += (pin, pinState, timestamp) =>
+                {
+                    Debug.Print("Bam! [" + pin + ", " + pinState + ", " + timestamp + "]");
+                };
             var t2 = new GT.Timer(1000);
             t2.Tick += timer =>
                            {
                                io60p16.WriteRegister(0x18, 6); // Select port
-                               intStatus = io60p16.ReadRegister(0x19);
+                               intStatus = io60p16.ReadRegister(0x19)[0];
                                Debug.Print("InterruptEnable:  " + intStatus);
                            };
             t2.Start();

@@ -78,20 +78,6 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             // Start receiving interrupts.
             _interrupt = new InterruptInput(socket, Socket.Pin.Three, GlitchFilterMode.Off, Interfaces.ResistorMode.Disabled, InterruptMode.RisingEdge, null);
             _interrupt.Interrupt += OnInterrupt;
-
-            //try polling...
-            //var intPoller = new Thread(CheckForInterrupt);
-            //intPoller.Start();
-        }
-
-        private void CheckForInterrupt()
-        {
-            while (true)
-            {
-                //Debug.Print("Polling...");
-                OnInterrupt(null, false);
-                Thread.Sleep(20);
-            }
         }
 
         /// <summary>
@@ -102,8 +88,15 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             // Make sure we actually have some subscribers.
             if (Interrupt == null) return;
 
+            var intTime = DateTime.Now;
+
+            // Get the current pin state of all input pins on all ports.
+            var pinState = ReadRegister(INPUT_PORT_0_REGISTER, 8);
+
+            // Get the interrupt status of all pins on all ports.
+            var status = ReadRegister(INTERRUPT_STATUS_PORT_0_REGISTER, 8);
+
             // Loop through the enabled ports and find which pin(s) threw the event.
-            var status = ReadAllInterruptStatusRegisters();
             for (byte port = 0; port < 8; port++)
             {
                 // Get the interrupt status of all pins on the port.
@@ -115,7 +108,9 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
                 {
                     if ((intMask & (1 << pin)) > 0)
                     {
-                        Interrupt(this, new InterruptEventArgs(port, pin, DateTime.Now));
+                        Interrupt(this, new InterruptEventArgs((IOPin)((port << 4) + pin)
+                                                              ,(pinState[port] & (1 << pin)) > 0
+                                                              ,intTime));
                     }
                 }
             }
@@ -174,10 +169,10 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// </summary>
         /// <param name="register">The register to read from.</param>
         /// <returns>The value in the register.</returns>
-        public byte ReadRegister(byte register)
+        public byte[] ReadRegister(byte register, byte length = 1)
         {            
             var writeBuffer = new byte[] { register };
-            var data = new byte[1];
+            var data = new byte[length];
 
             lock (_lock)
             {
@@ -198,40 +193,10 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
                 _i2cDevice.Read(data, 0, data.Length);
   #endif
 #endif
-                }
-            return data[0];
-        }
-
-        /// <summary>
-        /// Read in one shot all status registers (10h..17h)
-        /// </summary>
-        /// <returns>an array of 8 bytes representing the 8 registers values </returns>
-        public byte[] ReadAllInterruptStatusRegisters()
-        {
-            var writeBuffer = new byte[] { INTERRUPT_STATUS_PORT_0_REGISTER };
-            var data = new byte[8]; // read 8 registers in sequence
-
-            lock (_lock)
-                {
-#if HARDWARE_I2C
-                _i2c.Write(writeBuffer, 20);
-                _i2c.Read(data, 20);
-#else
-  #if USE_DAISYLINK_SOFTWARE_I2C
-                // Bring the pointer to the needed address
-                _i2c.Write(DEV_ADDR, new byte[] { register });
-                // Read the address
-                _i2c.Read(DEV_ADDR, data);
-  #else
-                // Bring the pointer to the needed address
-                _i2cDevice.Write(writeBuffer, 0, 1);
-                // Read the address
-                _i2cDevice.Read(data, 0, data.Length);
-  #endif
-#endif
-                return data;
             }
+            return data;
         }
+
         /// <summary>
         /// Reads the value of a port.
         /// </summary>
@@ -239,7 +204,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// <returns>The value of the port.</returns>
         public byte Read(byte port)
         {
-            return ReadRegister((byte) (INPUT_PORT_0_REGISTER + port));
+            return ReadRegister((byte) (INPUT_PORT_0_REGISTER + port))[0];
         }
 
         /// <summary>
@@ -249,9 +214,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// <returns>High (true) or low (false) state of the pin.</returns>
         public bool Read(IOPin pin)
         {
-            var portVal = Read(GetPortNumber(pin));
-            var pinNumber = GetPinNumber(pin);
-            return (portVal & (1 << pinNumber)) != 0;
+            return (Read(GetPortNumber(pin)) & (1 << GetPinNumber(pin))) != 0;
         }
 
         /// <summary>
@@ -348,9 +311,9 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// </summary>
         /// <param name="pin">The pin to make an interrupt port.</param>
         /// <returns>An InterruptPort object.</returns>
-        public IO60P16.InterruptPort CreateInterruptPort(IOPin pin)
+        public IO60P16.InterruptPort CreateInterruptPort(IOPin pin, ResistorMode resistor, InterruptMode interrupt)
         {
-            return new IO60P16.InterruptPort(this, pin);
+            return new IO60P16.InterruptPort(this, pin, resistor, interrupt);
         }
 
         /// <summary>
@@ -379,7 +342,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             lock (_lock)
             {
                 WriteRegister(PORT_SELECT_REGISTER, port);
-                var b = ReadRegister((byte) resistorMode); // Read the current values for the resistor mode.
+                var b = ReadRegister((byte) resistorMode)[0]; // Read the current values for the resistor mode.
                 b |= (byte) (1 << (pin)); // Config pin
                 WriteRegister((byte) resistorMode, b); // Apply
             }
@@ -413,7 +376,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
                 // We have to check all of the drive mode registers until we find a match...
                 for (byte reg = 0x1d; reg <= 0x23; reg++)
                 {
-                    var r = ReadRegister(reg);
+                    var r = ReadRegister(reg)[0];
                     if ((r & mask) > 0) return (ResistorMode) reg;
                 }
             }
@@ -433,7 +396,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
 
                 // Get current direction values for all pins on the port.
                 WriteRegister(PORT_SELECT_REGISTER, port);
-                var d = ReadRegister(PORT_DIRECTION_REGISTER);
+                var d = ReadRegister(PORT_DIRECTION_REGISTER)[0];
 
                 // Update just the direction of our pin.
                 if (direction == PinDirection.Input)
@@ -492,7 +455,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             lock (_lock)
             {
                 WriteRegister(PORT_SELECT_REGISTER, port); // Select port
-                return ReadRegister(INTERRUPT_MASK_PORT_REGISTER);
+                return ReadRegister(INTERRUPT_MASK_PORT_REGISTER)[0];
             }
         }
 
@@ -523,7 +486,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             lock (_lock)
             {
                 WriteRegister(PORT_SELECT_REGISTER, port); // Select port
-                var b = ReadRegister(INTERRUPT_MASK_PORT_REGISTER); // Read the current values of the port.
+                var b = ReadRegister(INTERRUPT_MASK_PORT_REGISTER)[0]; // Read the current values of the port.
 
                 // Update just the interrupt enable of our pin.
                 if (!enable) // A 1 status on this register means "disabled".
@@ -565,7 +528,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
                 var port = GetPortNumber(pin);
 
                 WriteRegister(PORT_SELECT_REGISTER, port);  // Select port
-                var b = ReadRegister(INVERSION_REGISTER);   // Read the current values of the port.
+                var b = ReadRegister(INVERSION_REGISTER)[0];   // Read the current values of the port.
 
                 // Update just the interrupt enable of our pin.
                 if (enable)
@@ -586,25 +549,31 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
     /// </summary>
     public class InterruptEventArgs : EventArgs
     {
-        public InterruptEventArgs(byte port, byte pin, DateTime timestamp)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="pinId">The pin that raised the event.</param>
+        /// <param name="pinState">The state value of the pin at the time the event was raised.</param>
+        /// <param name="timestamp">The date/time that the event was raised.</param>
+        public InterruptEventArgs(IOPin pinId, bool pinState, DateTime timestamp)
         {
-            Port = port;
-            Pin = pin;
+            PinId = pinId;
             Timestamp = timestamp;
+            PinState = pinState;
         }
 
         /// <summary>
-        /// The port where the interrupt occurred.
+        /// The pin that raised the event.
         /// </summary>
-        public byte Port { get; private set; }
+        public IOPin PinId { get; private set; }
 
         /// <summary>
-        /// The pin that triggered the event.
+        /// The state value of the pin at the time the event was raised.
         /// </summary>
-        public byte Pin { get; private set; }
+        public bool PinState { get; private set; }
 
         /// <summary>
-        /// The date/time that the interrupt occurred.
+        /// The date/time that the event was raised.
         /// </summary>
         public DateTime Timestamp { get; private set; }
     }

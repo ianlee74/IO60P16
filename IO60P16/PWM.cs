@@ -219,11 +219,11 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
 
             _parentModule.WriteRegister(0x18, port);                      // Select port
 
-            var b = _parentModule.ReadRegister(0x1a);
+            var b = _parentModule.ReadRegister(0x1a)[0];
             b |= (byte)((1 << pin));
             _parentModule.WriteRegister(0x1a, b);                         // select PWM for port output
 
-            b = _parentModule.ReadRegister(0x1C);
+            b = _parentModule.ReadRegister(0x1C)[0];
             b &= (byte)(~(1 << pin));
             _parentModule.WriteRegister(0x1C, b);                         // Set pin for output.
 
