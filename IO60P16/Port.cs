@@ -2,7 +2,7 @@ using System;
 
 namespace Gadgeteer.Modules.IanLee.IO60P16
 {
-    public delegate void InterruptHandler(uint data1, uint data2, DateTime time);
+    public delegate void InterruptHandler(IOPin pin, bool pinState, DateTime timestamp);
 
     public abstract class Port : IDisposable
     {
@@ -75,10 +75,10 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// </summary>
         private void OnParentInterrupt(object sender, InterruptEventArgs args)
         {
-            if (args.Port != PortNumber || args.Pin != PinNumber) return;
+            if ((byte)args.PinId != Id) return;
             if (OnInterrupt != null)
             {
-                OnInterrupt(args.Port, args.Pin, args.Timestamp);
+                OnInterrupt(args.PinId, args.PinState, args.Timestamp);
             }
         }
 
@@ -116,6 +116,5 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             get { return ParentModule.GetResistorMode((IOPin) Id); }
             set { ParentModule.SetResistorMode((IOPin)Id, value); }
         }
-
     }
 }

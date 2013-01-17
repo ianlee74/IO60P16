@@ -9,8 +9,8 @@
     <ProjectGuid>{BD13677A-70A9-4FAC-A4E1-11C72471B7BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gadgeteer.Modules.GHIElectronics.IO60P16</RootNamespace>
-    <AssemblyName>GTM.GHIElectronics.IO60P16</AssemblyName>
+    <RootNamespace>Gadgeteer.Modules.IanLee.IO60P16</RootNamespace>
+    <AssemblyName>GTM.IanLee.IO60P16</AssemblyName>
     <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <!--Identify this as a MicroFramework, CSharp project-->
@@ -38,7 +38,7 @@
     <DefineConstants>DEBUG;TRACE,MF_FRAMEWORK_VERSION_V4_2</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\NETMF\GTM.GHIElectronics.IO60P16.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\NETMF\GTM.IanLee.IO60P16.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,7 +47,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NETMF\GTM.GHIElectronics.IO60P16.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\NETMF\GTM.IanLee.IO60P16.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
