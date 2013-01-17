@@ -311,9 +311,9 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// </summary>
         /// <param name="pin">The pin to make an interrupt port.</param>
         /// <returns>An InterruptPort object.</returns>
-        public IO60P16.InterruptPort CreateInterruptPort(IOPin pin)
+        public IO60P16.InterruptPort CreateInterruptPort(IOPin pin, ResistorMode resistor, InterruptMode interrupt)
         {
-            return new IO60P16.InterruptPort(this, pin);
+            return new IO60P16.InterruptPort(this, pin, resistor, interrupt);
         }
 
         /// <summary>

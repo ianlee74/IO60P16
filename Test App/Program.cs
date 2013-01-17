@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Gadgeteer;
+using Gadgeteer.Interfaces;
 using Gadgeteer.Modules.IanLee.IO60P16;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
@@ -12,6 +13,7 @@ using OutputPort = Gadgeteer.Modules.IanLee.IO60P16.OutputPort;
 using InputPort = Gadgeteer.Modules.IanLee.IO60P16.InputPort;
 using InterruptPort = Gadgeteer.Modules.IanLee.IO60P16.InterruptPort;
 using PWM = Gadgeteer.Modules.IanLee.IO60P16.PWM;
+using ResistorMode = Gadgeteer.Modules.IanLee.IO60P16.ResistorMode;
 
 namespace Test_App
 {
@@ -79,9 +81,8 @@ namespace Test_App
 
             Debug.Print("Program Started");
 
-            bool state;
             byte intStatus;
-            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1);
+            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1, ResistorMode.ResistivePullUp, InterruptMode.FallingEdge);
             ip0.OnInterrupt += (pin, pinState, timestamp) =>
                 {
                     Debug.Print("Bam! [" + pin + ", " + pinState + ", " + timestamp + "]");

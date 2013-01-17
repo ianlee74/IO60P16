@@ -2,15 +2,8 @@ using System;
 
 namespace Gadgeteer.Modules.IanLee.IO60P16
 {
-    public delegate void InterruptHandler(IOPin pin, bool pinState, DateTime timestamp);
-
     public abstract class Port : IDisposable
     {
-        /// <summary>
-        /// Event that is raised when an interrupt is triggered.
-        /// </summary>
-        public event InterruptHandler OnInterrupt;
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -61,35 +54,6 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
             get { return (byte)(_id & 0xF); }
         }
 
-        /// <summary>
-        /// Enables interrupts for this port.
-        /// </summary>
-        public void EnableInterrupt()
-        {
-            ParentModule.SetInterruptEnable((IOPin) Id, true);
-            ParentModule.Interrupt += OnParentInterrupt;
-        }
-
-        /// <summary>
-        /// Handles interrupts raised by the module and throws a new event if the interrupt was for this pin.
-        /// </summary>
-        private void OnParentInterrupt(object sender, InterruptEventArgs args)
-        {
-            if ((byte)args.PinId != Id) return;
-            if (OnInterrupt != null)
-            {
-                OnInterrupt(args.PinId, args.PinState, args.Timestamp);
-            }
-        }
-
-        /// <summary>
-        /// Disable interrupts for this port.
-        /// </summary>
-        public void DisableInterrupt()
-        {
-            ParentModule.SetInterruptEnable((IOPin)Id, false);
-            ParentModule.Interrupt -= OnParentInterrupt;
-        }
 
         /// <summary>
         /// Read the current value of the port.
@@ -101,20 +65,19 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         }
 
         /// <summary>
-        /// Dispose of the port.
-        /// </summary>
-        public virtual void Dispose()
-        {
-            DisableInterrupt();         // Disable interrupts for this pin on the module.
-        }
-
-        /// <summary>
         /// Gets or sets the resistor mode of the input port. You set the initial resistor mode value in the constructor.
         /// </summary>
         public ResistorMode Resistor
         {
             get { return ParentModule.GetResistorMode((IOPin) Id); }
             set { ParentModule.SetResistorMode((IOPin)Id, value); }
+        }
+
+        /// <summary>
+        /// Dispose of the port.
+        /// </summary>
+        public virtual void Dispose()
+        {
         }
     }
 }
