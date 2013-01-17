@@ -109,7 +109,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
                     if ((intMask & (1 << pin)) > 0)
                     {
                         Interrupt(this, new InterruptEventArgs((IOPin)((port << 4) + pin)
-                                                              ,(pinState[port] & (1 << pin)) == 1
+                                                              ,(pinState[port] & (1 << pin)) > 0
                                                               ,intTime));
                     }
                 }
@@ -214,9 +214,7 @@ namespace Gadgeteer.Modules.IanLee.IO60P16
         /// <returns>High (true) or low (false) state of the pin.</returns>
         public bool Read(IOPin pin)
         {
-            var portVal = Read(GetPortNumber(pin));
-            var pinNumber = GetPinNumber(pin);
-            return (portVal & (1 << pinNumber)) != 0;
+            return (Read(GetPortNumber(pin)) & (1 << GetPinNumber(pin))) != 0;
         }
 
         /// <summary>

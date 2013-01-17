@@ -84,8 +84,7 @@ namespace Test_App
             ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1);
             ip0.OnInterrupt += (pin, pinState, timestamp) =>
                 {
-                    state = ip0.Read();
-                    Debug.Print("Bam! [" + pin + ", " + pinState + ", " + timestamp + "]  " + state);
+                    Debug.Print("Bam! [" + pin + ", " + pinState + ", " + timestamp + "]");
                 };
             var t2 = new GT.Timer(1000);
             t2.Tick += timer =>
