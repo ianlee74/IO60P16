@@ -82,7 +82,7 @@ namespace Test_App
             Debug.Print("Program Started");
 
             byte intStatus;
-            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1, ResistorMode.ResistivePullUp, InterruptMode.FallingEdge);
+            ip0 = io60p16.CreateInterruptPort(IOPin.Port6_Pwm1, ResistorMode.ResistivePullDown, InterruptMode.FallingEdge);
             ip0.OnInterrupt += (pin, pinState, timestamp) =>
                 {
                     Debug.Print("Bam! [" + pin + ", " + pinState + ", " + timestamp + "]");
@@ -93,6 +93,7 @@ namespace Test_App
                                io60p16.WriteRegister(0x18, 6); // Select port
                                intStatus = io60p16.ReadRegister(0x19)[0];
                                Debug.Print("InterruptEnable:  " + intStatus);
+                               Debug.Print("Port6_Pin1 Drive Mode: " + ip0.Resistor);
                            };
             t2.Start();
             return;
